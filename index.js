@@ -40,69 +40,6 @@ require("axios");
 var axios_1 = require("axios");
 // import 'open';
 var child_process_1 = require("child_process");
-// const traceip = (ip: string) =>
-//   new Promise<Jumps>((resolve, reject) => {
-//     const options = {
-//       hostname: "ip-api.com",
-//       post: 80,
-//       path: `/json/${ip}`,
-//       method: "GET",
-//     };
-//     const req = http.request(options, (res) => {
-//       if (res.statusCode == 200) {
-//         res.on("data", (d: Buffer) => {
-//           // console.log(d.toString());
-//           const {
-//             status,
-//             //   message,
-//             country,
-//             countrycode,
-//             city,
-//             lat,
-//             lon,
-//             isp,
-//             query: ip,
-//           } = JSON.parse(d.toString());
-//           if (status == "success") {
-//             // route.push({ country, countrycode, city, lat, lon, isp, ip });
-//             resolve({ country, countrycode, city, lat, lon, isp, ip });
-//           }
-//         });
-//       } else {
-//         console.log(`Request failed with status code: ${res.statusCode}`);
-//         console.log(res.statusMessage);
-//       }
-//     });
-//     req.on("error", (e) => {
-//       console.error(e);
-//       reject(e);
-//       process.exit();
-//     });
-//     req.end();
-//   });
-// const trace = (iplist: string[]) =>
-//   new Promise<Jumps[]>(async (resolve, reject) => {
-//     try {
-//       let route: Jumps[] = [];
-//       let promiseList = Promise.all(
-//         iplist.map(async (ip: string) => {
-//           try {
-//             // console.log(ip);
-//             const r = await traceip(ip);
-//             route.push(r);
-//             console.log(r);
-//             // resolve(route);
-//           } catch (e) {
-//             console.error(e);
-//           }
-//         })
-//       );
-//       resolve(route);
-//       // return route;
-//     } catch (e) {
-//       console.error(e);
-//     }
-//   });
 child_process_1.exec("traceroute example.com", function (err, std, out) { return __awaiter(void 0, void 0, void 0, function () {
     var reg, ipLists, route;
     var _a;
@@ -114,33 +51,17 @@ child_process_1.exec("traceroute example.com", function (err, std, out) { return
         }
         reg = /\(([^)]+)\)/g;
         ipLists = Array.from(new Set((_a = std.match(reg)) === null || _a === void 0 ? void 0 : _a.map(function (i) { return i.substr(1, i.length - 2); })));
-        //   console.log(ipLists);
-        try {
-            route = [];
-            axios_1["default"]
-                .all(ipLists.map(function (ip) { return axios_1["default"].get("http://ip-api.com/json/" + ip); }))
-                .then(function (resp) {
-                // console.log(Object.keys(resp));
-                // console.log(resp)
-                // if(resp.status==200){
-                // @ts-ignore
-                // route.push(resp.data);
-                // }
-                resp = resp.filter(function (r) { return r.status == 200; });
-                resp = resp.map(function (r) { return r.data; });
-                return resp;
-            }).then(function (routes) {
-                console.log(routes);
-            })["finally"](function () {
-                // console.log(route);
-            });
-            // console.log(route);
-        }
-        catch (e) {
-            console.error("ERROR");
-            console.error(e);
-            process.exit();
-        }
+        route = [];
+        axios_1["default"]
+            .all(ipLists.map(function (ip) { return axios_1["default"].get("http://ip-api.com/json/" + ip); }))
+            .then(function (resp) {
+            resp = resp.filter(function (r) { return r.status == 200; });
+            resp = resp.map(function (r) { return r.data; });
+            return resp;
+        })
+            .then(function (routes) {
+            console.log(routes);
+        });
         return [2 /*return*/];
     });
 }); });
