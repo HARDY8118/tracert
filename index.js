@@ -38,8 +38,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 require("axios");
 var axios_1 = require("axios");
-// import 'open';
+var express = require("express");
+// import express from "express";
 var child_process_1 = require("child_process");
+var open = require("open");
 child_process_1.exec("traceroute example.com", function (err, std, out) { return __awaiter(void 0, void 0, void 0, function () {
     var reg, ipLists, route;
     var _a;
@@ -60,7 +62,45 @@ child_process_1.exec("traceroute example.com", function (err, std, out) { return
             return resp;
         })
             .then(function (routes) {
-            console.log(routes);
+            // console.log(routes);
+            var app = express();
+            var PORT = 5555;
+            var quit = false;
+            app.set("view engine", "ejs");
+            app.use(express.static("static"));
+            app.get("/", function (req, res) {
+                res.render("main");
+            });
+            app.get("/route", function (req, res) {
+                setTimeout(function () {
+                    console.log("Cleaning local server");
+                    server.close();
+                    process.exit();
+                });
+                console.log("Sending Route");
+                res.json(routes);
+            });
+            // app.get("/events", (req, res) => {
+            //   if (req.headers.accept && req.headers.accept === "text/event-stream")
+            //     res.writeHead(200, {
+            //       "Content-Type": "text/event-stream",
+            //       Connection: "keep-alive",
+            //       "Cache-Control": "no-cache",
+            //     });
+            //   setInterval(() => {
+            //     res.write(`id: ${Date.now()}\ndata: ${quit}\nevent: sigint\n\n`);
+            //   }, 2000);
+            // });
+            var server = app.listen(PORT, function () {
+                console.log("Opening browser");
+                open("http://localhost:" + PORT + "/");
+                // process.on("SIGINT", () => {
+                //   // TODO Close browser window
+                //   server.close();
+                //   // console.log('Exit')
+                //   process.exit();
+                // });
+            });
         });
         return [2 /*return*/];
     });

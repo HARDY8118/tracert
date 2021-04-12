@@ -1,7 +1,9 @@
 import "axios";
 import axios from "axios";
-// import 'open';
+import express = require("express");
+// import express from "express";
 import { exec } from "child_process";
+import open = require("open");
 
 interface Jumps {
   country: string;
@@ -35,6 +37,52 @@ exec("traceroute example.com", async (err, std, out) => {
       return resp;
     })
     .then((routes) => {
-      console.log(routes);
+      // console.log(routes);
+
+      const app = express();
+
+      const PORT = 5555;
+      let quit = false;
+
+      app.set("view engine", "ejs");
+      app.use(express.static("static"));
+
+      app.get("/", (req, res) => {
+        res.render("main");
+      });
+
+      app.get("/route", (req, res) => {
+        setTimeout(() => {
+          console.log("Cleaning local server");
+          server.close();
+          process.exit();
+        });
+        console.log("Sending Route");
+        res.json(routes);
+      });
+
+      // app.get("/events", (req, res) => {
+      //   if (req.headers.accept && req.headers.accept === "text/event-stream")
+      //     res.writeHead(200, {
+      //       "Content-Type": "text/event-stream",
+      //       Connection: "keep-alive",
+      //       "Cache-Control": "no-cache",
+      //     });
+      //   setInterval(() => {
+      //     res.write(`id: ${Date.now()}\ndata: ${quit}\nevent: sigint\n\n`);
+      //   }, 2000);
+      // });
+
+      const server = app.listen(PORT, () => {
+        console.log("Opening browser");
+        open(`http://localhost:${PORT}/`);
+        // process.on("SIGINT", () => {
+        //   // TODO Close browser window
+        //   server.close();
+
+        //   // console.log('Exit')
+        //   process.exit();
+        // });
+      });
     });
 });

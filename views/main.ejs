@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    svg {
+        /* position: absolute; */
+        display: block;
+        margin: auto;
+    }
+
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        z-index: 2;
+    }
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route</title>
+</head>
+
+<body>
+    <%- include('map') %>
+        <canvas></canvas>
+</body>
+<script>
+    var canvas = document.querySelector('canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var ctx = canvas.getContext('2d');
+    window.onload = function () {
+        fetch('/route').then(res => {
+            if (res.ok) {
+                return res.json()
+            }
+            alert('Error')
+        }).then(routes => {
+            // console.log(res)
+
+            for (route of routes) {
+                console.log(route)
+                if (route.countryCode) {
+                    const p = document.querySelector(`#${route.countryCode}`);
+                    p.style.fill = p && "#00ff00";
+                }
+            }
+
+
+            // const img = new Image();
+            // img.onload = function () {
+            //     ctx.drawImage(img, Math.round((window.innerWidth - 1009.6727) / 2), 0);
+            // }
+            // img.src = "/world.svg";
+        })
+    }
+</script>
+
+</html>
