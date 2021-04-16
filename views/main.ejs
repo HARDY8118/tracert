@@ -4,12 +4,14 @@
     body {
         margin: 0;
         padding: 0;
+        background-color: black;
     }
 
     svg {
         /* position: absolute; */
         display: block;
         margin: auto;
+        pointer-events: none;
     }
 
     canvas {
@@ -19,6 +21,34 @@
         margin: 0;
         padding: 0;
         z-index: 2;
+    }
+
+    path {
+        pointer-events: all;
+        fill: black;
+        stroke: white
+    }
+
+    path.jump {
+        fill: #00ff00;
+    }
+
+    #routeList {
+        position: absolute;
+        background-color: white;
+        top: 1em;
+        left: 1em;
+        padding: 1em;
+        opacity: 0.4;
+        z-index: 8;
+    }
+
+    #routeList:hover {
+        opacity: 1;
+    }
+
+    .routeDetails{
+        font-size: 0.8em;
     }
 </style>
 
@@ -31,14 +61,11 @@
 
 <body>
     <%- include('map') %>
-        <canvas></canvas>
+        <div id="routeList"></div>
 </body>
 <script>
-    var canvas = document.querySelector('canvas');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    var ctx = canvas.getContext('2d');
     window.onload = function () {
+        const r = document.querySelector('#routeList');
         fetch('/route').then(res => {
             if (res.ok) {
                 return res.json()
@@ -51,17 +78,34 @@
                 console.log(route)
                 if (route.countryCode) {
                     const p = document.querySelector(`#${route.countryCode}`);
-                    p.style.fill = p && "#00ff00";
+                    r.appendChild(createJumpNode(route))
+                    p && p.classList.add('jump');
+                    // p.style.fill = p && "#00ff00";
                 }
             }
-
-
-            // const img = new Image();
-            // img.onload = function () {
-            //     ctx.drawImage(img, Math.round((window.innerWidth - 1009.6727) / 2), 0);
-            // }
-            // img.src = "/world.svg";
         })
+    }
+
+    function createJumpNode(routePoint){
+        const d=document.createElement('details');
+        const s=document.createElement('summary');
+        const det=document.createElement('span')
+        det.className="routeDetails";
+
+        det.innerHTML=`
+        <b>as</b> ${routePoint.as} <br/>
+        <b>city</b> ${routePoint.city} <br/>
+        <b>country</b> ${routePoint.country} <br/>
+        <b>isp</b> ${routePoint.isp} <br/>
+        <b>lat</b> ${routePoint.lat} <br/>
+        <b>lon</b> ${routePoint.lon} <br/>
+        <b>ip</b> ${routePoint.query} <br/>
+        `
+
+        s.innerText=routePoint.country
+        d.appendChild(s)
+        d.appendChild(det)
+        return d;
     }
 </script>
 
