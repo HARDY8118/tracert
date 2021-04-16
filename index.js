@@ -42,7 +42,7 @@ var express = require("express");
 // import express from "express";
 var child_process_1 = require("child_process");
 var open = require("open");
-child_process_1.exec("traceroute example.com", function (err, std, out) { return __awaiter(void 0, void 0, void 0, function () {
+child_process_1.exec("traceroute --max-hops=3 example.com", function (err, std, out) { return __awaiter(void 0, void 0, void 0, function () {
     var reg, ipLists, route;
     var _a;
     return __generator(this, function (_b) {
@@ -51,6 +51,7 @@ child_process_1.exec("traceroute example.com", function (err, std, out) { return
             console.log(err);
             process.exit();
         }
+        console.log(std);
         reg = /\(([^)]+)\)/g;
         ipLists = Array.from(new Set((_a = std.match(reg)) === null || _a === void 0 ? void 0 : _a.map(function (i) { return i.substr(1, i.length - 2); })));
         route = [];
