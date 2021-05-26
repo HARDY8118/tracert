@@ -61,18 +61,6 @@ exec("traceroute example.com", async (err, std, out) => {
         res.json(routes);
       });
 
-      // app.get("/events", (req, res) => {
-      //   if (req.headers.accept && req.headers.accept === "text/event-stream")
-      //     res.writeHead(200, {
-      //       "Content-Type": "text/event-stream",
-      //       Connection: "keep-alive",
-      //       "Cache-Control": "no-cache",
-      //     });
-      //   setInterval(() => {
-      //     res.write(`id: ${Date.now()}\ndata: ${quit}\nevent: sigint\n\n`);
-      //   }, 2000);
-      // });
-
       const server = app.listen(PORT, () => {
         console.log("Opening browser");
         open(`http://localhost:${PORT}/`);
