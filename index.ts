@@ -15,13 +15,23 @@ interface Jumps {
   ip: string;
 }
 
-exec("traceroute example.com", async (err, std, out) => {
+const max_hops: number = 30;
+let _c:number=0;
+const loadingChars:string[]=['|','/','-','\\'];
+
+const loadingInterval = setInterval(() => {
+  process.stdout.write(`\rRunning traceroute command with maximum ${max_hops} hops, may take some time. ${loadingChars[(_c % loadingChars.length)]} `);
+  _c++;
+}, 800);
+
+exec(`traceroute --max-hops=${max_hops} example.com`, async (err, std, out) => {
   if (err) {
-    console.log("Error getting route");
+    console.log("\n\nError getting route");
     console.log(err);
     process.exit();
   }
 
+  clearInterval(loadingInterval);
   // console.log(std);
   const reg: RegExp = /\(([^)]+)\)/g;
   const ipLists: string[] = Array.from(
@@ -62,7 +72,7 @@ exec("traceroute example.com", async (err, std, out) => {
       });
 
       const server = app.listen(PORT, () => {
-        console.log("Opening browser");
+        console.log("\n\nOpening browser");
         open(`http://localhost:${PORT}/`);
         // process.on("SIGINT", () => {
         //   // TODO Close browser window

@@ -42,15 +42,23 @@ var express = require("express");
 // import express from "express";
 var child_process_1 = require("child_process");
 var open = require("open");
-child_process_1.exec("traceroute example.com", function (err, std, out) { return __awaiter(void 0, void 0, void 0, function () {
+var max_hops = 30;
+var _c = 0;
+var loadingChars = ['|', '/', '-', '\\'];
+var loadingInterval = setInterval(function () {
+    process.stdout.write("\rRunning traceroute command with maximum " + max_hops + " hops, may take some time. " + loadingChars[(_c % loadingChars.length)] + " ");
+    _c++;
+}, 800);
+child_process_1.exec("traceroute --max-hops=" + max_hops + " example.com", function (err, std, out) { return __awaiter(void 0, void 0, void 0, function () {
     var reg, ipLists, route;
     var _a;
     return __generator(this, function (_b) {
         if (err) {
-            console.log("Error getting route");
+            console.log("\n\nError getting route");
             console.log(err);
             process.exit();
         }
+        clearInterval(loadingInterval);
         reg = /\(([^)]+)\)/g;
         ipLists = Array.from(new Set((_a = std.match(reg)) === null || _a === void 0 ? void 0 : _a.map(function (i) { return i.substr(1, i.length - 2); })));
         route = [];
@@ -80,19 +88,8 @@ child_process_1.exec("traceroute example.com", function (err, std, out) { return
                 console.log("Sending Route");
                 res.json(routes);
             });
-            // app.get("/events", (req, res) => {
-            //   if (req.headers.accept && req.headers.accept === "text/event-stream")
-            //     res.writeHead(200, {
-            //       "Content-Type": "text/event-stream",
-            //       Connection: "keep-alive",
-            //       "Cache-Control": "no-cache",
-            //     });
-            //   setInterval(() => {
-            //     res.write(`id: ${Date.now()}\ndata: ${quit}\nevent: sigint\n\n`);
-            //   }, 2000);
-            // });
             var server = app.listen(PORT, function () {
-                console.log("Opening browser");
+                console.log("\n\nOpening browser");
                 open("http://localhost:" + PORT + "/");
                 // process.on("SIGINT", () => {
                 //   // TODO Close browser window

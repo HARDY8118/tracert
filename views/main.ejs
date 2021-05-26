@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,21 +9,125 @@
     <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' />
     <style>
-        body{
+        body {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        #map{
+
+        #map {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
         }
+
+        #info {
+            position: fixed;
+            top: 1em;
+            right: 1em;
+            font-size: 1.2rem;
+            opacity: 0.5;
+            cursor: default;
+            padding: 0.8em;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            max-height: 25vh;
+            overflow-y: scroll;
+        }
+
+        #info:hover {
+            opacity: 0.8;
+            background-color: white;
+        }
     </style>
 </head>
+
 <body>
     <div id="map"></div>
+    <span id="info"></span>
 </body>
+<script>
+    function countryNames(_u, _list) {
+        _list = _list.map((c, _i) => {
+            if (c.status == "success") {
+                return (_i + 1) + ". " + (c.city && c.city) + ", " + (c.country && c.country) + (c.regionName && c.regionName) + "<br>";
+            } else if (c.status == "fail") {
+                return (_i + 1) + ". " + c.message + "<br>";
+            } else {
+                return "";
+            }
+        }).join("")
+
+        document.getElementById('info').innerHTML = `Identified ${_u} of ${_list.length} <br><br> ${_list}`
+    }
+
+    L.mapbox.accessToken = 'api-key';
+
+    const map = L.mapbox.map('map').setView([0.0, 0.0], 1)
+        .addLayer(L.mapbox.styleLayer('mapbox://styles/mapbox/streets-v11'));
+
+    window.onload = function () {
+        const r = document.querySelector('#routeList');
+        fetch('/route').then(res => {
+            if (res.ok) {
+                return res.json()
+            }
+            alert('Error')
+        }).then(routes => {
+            console.log(routes)
+
+            // for (route of routes) {
+            //     console.log(route)
+            //     if (route.countryCode) {
+            //         // Show
+            //     }
+            // }
+
+            unprivateRoutes = routes.filter(r => r.countryCode).map(r => [r.lat, r.lon])
+
+            countryNames(unprivateRoutes.length, routes);
+
+            const geoJSON = [{
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [unprivateRoutes[0][1], unprivateRoutes[0][0]]
+                },
+                properties: {
+                    'marker-color': '#00f',
+                    'marker-size': 'small'
+                }
+            }]
+
+            // const startMarker = new L.mapboxgl.Marker().setLngLat(unprivateRoutes[0])
+            // unprivateRoutes[0].reverse()
+
+            if (routes[routes.length - 1].status == "success") {
+                geoJSON.push({
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [routes[routes.length - 1].lon, routes[routes.length - 1].lat]
+                    },
+                    properties: {
+                        'marker-color': '#f00',
+                        'marker-size': 'small'
+                    }
+                })
+            }
+
+            L.mapbox.featureLayer().setGeoJSON(geoJSON).addTo(map);
+            console.log(unprivateRoutes)
+            if (unprivateRoutes.length == 1) {
+                L.marker(unprivateRoutes[0]).addTo(map);
+                L.polyline(unprivateRoutes, { color: '#000' }).addTo(map);
+            } else {
+                L.polyline(unprivateRoutes, { color: '#f00' }).addTo(map);
+            }
+
+        })
+    }
+</script>
+
 </html>
