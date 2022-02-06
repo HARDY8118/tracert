@@ -64,10 +64,10 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
-"@types/watch@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@types/watch/-/watch-1.0.1.tgz#958340cfdbe3cfca85410e238beb05183947fd19"
-  integrity sha512-hN+2AA4LpM9So7z1ChhOiQ7SNZiKhrjKVDgxERT9nXTSb+ve1aNap4OExhNG4J/RAumJuZsg1kOeGlyYumVGew==
+"@types/watch@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@types/watch/-/watch-1.0.3.tgz#cd0c51ba2a45a76bba4c5e82e08c034c380b923e"
+  integrity sha512-4YlW05EAjLp6FRATvsWUQK+7kFGKYYz506z68Krfi2oENCOE5DYvF3rYQoCigMwXOdkLGJXf5lWTbY45JPbhoQ==
   dependencies:
     "@types/node" "*"
 
